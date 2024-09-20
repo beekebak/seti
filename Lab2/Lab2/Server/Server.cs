@@ -29,7 +29,7 @@ public class Server
         while (true)
         { 
             TcpClient newClient = listener.AcceptTcpClientAsync().Result;
-            using FileHandler handler = new FileHandler(newClient);
+            FileHandler handler = new FileHandler(newClient);
             try
             {
                 Task.Run(handler.HandleConnection);

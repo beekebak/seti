@@ -20,25 +20,28 @@ public class FileHandler : IDisposable
 
     public async void HandleConnection()
     {
-        int chunkSize = 8192;
-        using var stream = _client.GetStream();
-        byte[] buffer = new byte[chunkSize]; 
-        await stream.ReadAsync(buffer, 0, chunkSize);
-        ParseFileMetadata(buffer);
-        CreateFile();
-        await stream.WriteAsync(Encoding.ASCII.GetBytes("ok"), 0, "ok".Length);
-        startTime = TimeOnly.FromDateTime(DateTime.Now);
-        Timer timer = new Timer((object? o) => {PrintSpeed();}, null, 3000, 3000);
-        while (_readSize < _fileSize)
+        using (this)
         {
-            int count = stream.ReadAsync(buffer, 0, chunkSize).Result;
-            await _fileStream.WriteAsync(buffer, 0, count);
-            _readSize += count;
+            int chunkSize = 8192;
+            var stream = _client.GetStream();
+            byte[] buffer = new byte[chunkSize];
+            await stream.ReadAsync(buffer, 0, chunkSize);
+            ParseFileMetadata(buffer);
+            CreateFile();
+            await stream.WriteAsync(Encoding.ASCII.GetBytes("ok"), 0, "ok".Length);
+            startTime = TimeOnly.FromDateTime(DateTime.Now);
+            Timer timer = new Timer((object? o) => { PrintSpeed(); }, null, 3000, 3000);
+            while (_readSize < _fileSize)
+            {
+                int count = stream.ReadAsync(buffer, 0, chunkSize).Result;
+                await _fileStream.WriteAsync(buffer, 0, count);
+                _readSize += count;
+            }
+
+            timer.Change(Timeout.Infinite, Timeout.Infinite);
+            await stream.WriteAsync(Encoding.ASCII.GetBytes("done"), 0, "done".Length);
+            PrintSpeed();
         }
-        timer.Change(Timeout.Infinite, Timeout.Infinite);
-        await stream.WriteAsync(Encoding.ASCII.GetBytes("done"), 0, "done".Length);
-        _client.Close();
-        PrintSpeed();
     }
 
     private void ParseFileMetadata(byte[] buffer)
@@ -68,7 +71,7 @@ public class FileHandler : IDisposable
     {
         TimeOnly now = TimeOnly.FromDateTime(DateTime.Now);
         double totalSpeed = _readSize / (now - startTime).TotalSeconds / 1024 / 1024;
-        double currentSpeed = (double)(_readSize - _lastReadSize) / 3 / 1024 / 1024;
+        double currentSpeed = (double)(_readSize - _lastReadSize) / double.Min((now - startTime).TotalSeconds, 3) / 1024 / 1024;
         _lastReadSize = _readSize;
         Console.WriteLine("общая скорость {0:F2} мнгновенная скорость {1:F2} Мб", totalSpeed, currentSpeed);
     }
