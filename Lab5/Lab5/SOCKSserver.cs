@@ -36,13 +36,16 @@ public class SocksServer : IServer
         ConfigureSocket(tcpListener);
         Dictionary<ISocket, ISocketHandler> selectableSockets = new Dictionary<ISocket, ISocketHandler>{
             {new DefaultSocketWrapper(tcpListener), new ListenerHandler()}};
+        Dictionary<ISocket, ISocket> clientToServerSocketsMap = new Dictionary<ISocket, ISocket>();
         while (true)
         {
-            List<ISocket> sockets = selectableSockets.Keys.ToList();
+            List<Socket> sockets = selectableSockets.Keys.ToList().ConvertAll(socket => socket.GetSocket());
             Socket.Select(sockets, null, null, 1000);
-            sockets.ForEach(socket =>
+            sockets.ForEach(selectedSocket =>
             {
-                selectableSockets[socket].Handle(socket, selectableSockets);
+                ISocket wrappedSocket = selectableSockets.Keys.First(examinedSocket =>
+                    examinedSocket.GetSocket() == selectedSocket);
+                selectableSockets[wrappedSocket].Handle(wrappedSocket, selectableSockets, clientToServerSocketsMap);
             });
             ClearSockets(selectableSockets);
         }

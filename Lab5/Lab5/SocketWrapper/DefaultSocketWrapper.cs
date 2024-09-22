@@ -1,50 +1,51 @@
-using System.Net;
 using System.Net.Sockets;
 
 namespace Lab5.SocketWrapper;
 
-public class DefaultSocketWrapper : ISocket
+public class DefaultSocketWrapper(Socket socket) : ISocket
 {
-    private Socket _socket;
-
     public bool Connected()
     {
-        return _socket.Connected;
-    }
-
-    public DefaultSocketWrapper(Socket socket)
-    {
-        _socket = socket;
-    }
-
-    public void Bind(IPEndPoint localEp)
-    {
-        _socket.Bind(localEp);
-    }
-
-    public void Listen(int backlog)
-    {
-        _socket.Listen(backlog);
+        return socket.Connected;
     }
 
     public Socket Accept()
     {
-        return _socket.Accept();
+        return socket.Accept();
     }
 
     public byte[] Receive(byte[] buffer)
     {
-        int bytesRead = _socket.Receive(buffer);
+        int bytesRead = socket.Receive(buffer);
         return buffer.Take(bytesRead).ToArray();
     }
 
     public void Send(byte[] data)
     {
-        _socket.Send(data);
+        socket.Send(data);
     }
 
     public void Close()
     {
-        _socket.Close();
+        socket.Close();
+    }
+
+    public void Dispose()
+    {
+        socket.Dispose();
+    }
+
+    public Socket GetSocket()
+    {
+        return socket;
+    }
+
+    public bool Equals(ISocket? other)
+    {
+        if (other is DefaultSocketWrapper wrapper)
+        {
+            return other.GetSocket().Equals(wrapper.GetSocket());
+        }
+        return false;
     }
 }
