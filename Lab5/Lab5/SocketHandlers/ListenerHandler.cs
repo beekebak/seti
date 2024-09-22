@@ -5,11 +5,10 @@ namespace Lab5.SocketHandlers;
 
 public class ListenerHandler : ISocketHandler
 {
-    public void Handle(ISocket socket, Dictionary<ISocket, ISocketHandler> selectableSockets, 
-        Dictionary<ISocket, ISocket> clientToServerMap)
+    public void Handle(SocketConnection connection, List<SocketConnection> connections)
     {
-        Socket newSocket = socket.Accept();
+        Socket newSocket = connection.Client.Accept();
         newSocket.Blocking = false;
-        selectableSockets.Add(new DefaultSocketWrapper(newSocket), new AuthorizationHandler());
+        connections.Add(new (new DefaultSocketWrapper(newSocket), new AuthorizationHandler()));
     }
 }

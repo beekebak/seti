@@ -1,3 +1,4 @@
+using Lab5;
 using Lab5.SocketHandlers;
 using Lab5.SocketWrapper;
 
@@ -12,8 +13,8 @@ public class AuthorizationHandlerTests
         var socketMock = new Mock<ISocket>();
         byte[] data = [0x05, 0x01, 0x00];
         socketMock.Setup(socket => socket.Receive(It.IsAny<byte[]>())).Returns(data);
-        handler.Handle(socketMock.Object, new Dictionary<ISocket, ISocketHandler>(), 
-            new Dictionary<ISocket, ISocket>());
+        handler.Handle(new SocketConnection(socketMock.Object, new AuthorizationHandler()), 
+            new List<SocketConnection>());
         byte[] expectedAnswer = [0x05, 0x00];
         socketMock.Verify(socket => socket.Send(expectedAnswer), Times.Once);
     }
@@ -25,8 +26,8 @@ public class AuthorizationHandlerTests
         var socketMock = new Mock<ISocket>();
         byte[] data = [0x05, 0x01, 0x01];
         socketMock.Setup(socket => socket.Receive(It.IsAny<byte[]>())).Returns(data);
-        handler.Handle(socketMock.Object, new Dictionary<ISocket, ISocketHandler>(),
-            new Dictionary<ISocket, ISocket>());
+        handler.Handle(new SocketConnection(socketMock.Object, new AuthorizationHandler()), 
+            new List<SocketConnection>());
         byte[] expectedAnswer = [0x05, 0xFF];
         socketMock.Verify(socket => socket.Send(expectedAnswer), Times.Once);
     }

@@ -4,9 +4,9 @@ namespace Lab5.SocketHandlers;
 
 public class AuthorizationHandler : ISocketHandler
 {
-    public void Handle(ISocket socket, Dictionary<ISocket, ISocketHandler> selectableSockets, 
-        Dictionary<ISocket, ISocket> clientToServerMap)
+    public void Handle(SocketConnection connection, List<SocketConnection> connections)
     {
+        ISocket socket = connection.Client;
         byte[] buffer = new byte[258];
         buffer = socket.Receive(buffer);
         if (buffer[0] != 0x05)
@@ -19,10 +19,10 @@ public class AuthorizationHandler : ISocketHandler
         {
             if(buffer[i+2] != 0x00) continue;
             socket.Send([0x05, 0x00]);
-            selectableSockets[socket] = new ConnectionHandler();
+            connection.Handler = new ConnectionHandler();
             return;
         }
-        selectableSockets[socket] = new ConnectionHandler();
+        connection.Handler = new ConnectionHandler();
         socket.Send([0x05, 0xFF]);
     }
 }

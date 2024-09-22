@@ -20,8 +20,8 @@ public class ConnectionHandlerTests
         underlyingSocketStub.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"),
             5050));
         socketMock.Setup(socket => socket.GetSocket()).Returns(underlyingSocketStub);
-        handler.Handle(socketMock.Object, new Dictionary<ISocket, ISocketHandler>(), 
-            new Dictionary<ISocket, ISocket>());
+        handler.Handle(new SocketConnection(socketMock.Object, new ConnectionHandler()),
+            new List<SocketConnection>());
         socketMock.Verify(socket => socket.Send(It.Is<Byte[]>(data => data[1] == 0x00 ||
                                                                       data[1] == 0x04)), Times.Once);
     }
@@ -37,8 +37,8 @@ public class ConnectionHandlerTests
         underlyingSocketStub.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"),
             5050));
         socketMock.Setup(socket => socket.GetSocket()).Returns(underlyingSocketStub);
-        handler.Handle(socketMock.Object, new Dictionary<ISocket, ISocketHandler>(), 
-            new Dictionary<ISocket, ISocket>());
+        handler.Handle(new SocketConnection(socketMock.Object, new ConnectionHandler()),
+            new List<SocketConnection>());
         socketMock.Verify(socket => socket.Send(It.Is<Byte[]>(data => data[1] == 0x00 ||
                                                                       data[1] == 0x04)), Times.Once);
     }

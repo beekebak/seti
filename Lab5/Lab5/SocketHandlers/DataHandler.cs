@@ -5,8 +5,7 @@ namespace Lab5.SocketHandlers;
 
 public class DataHandler : ISocketHandler
 {
-    public void Handle(ISocket socket, Dictionary<ISocket, ISocketHandler> selectableSockets, 
-        Dictionary<ISocket, ISocket> clientToServerMap)
+    public void Handle(SocketConnection connection, List<SocketConnection> connections)
     {
         
     }

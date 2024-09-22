@@ -7,16 +7,19 @@ namespace Lab5;
 
 public class SocksServer : IServer
 {
-    private void ClearSockets(Dictionary<ISocket, ISocketHandler> selectableSockets)
+    private void ClearSockets(List<SocketConnection> selectableSockets)
     {
-        List<ISocket> socketsToClear = new List<ISocket>();
-        foreach (var socket in selectableSockets.Keys)
+        List<SocketConnection> socketsToClear = new List<SocketConnection>();
+        foreach (var socketConnection in selectableSockets)
         {
-            if(!socket.Connected() && selectableSockets[socket] is not ListenerHandler) socketsToClear.Add(socket);
+            if(socketConnection.Handler is ListenerHandler) continue;
+            bool serverConnected = socketConnection.Server?.Connected() ?? false;
+            if(!socketConnection.Client.Connected() || serverConnected) socketsToClear.Add(socketConnection);
         }
 
         foreach (var socket in socketsToClear)
         {
+            socket.Dispose();
             selectableSockets.Remove(socket);
         }
     }
@@ -34,18 +37,18 @@ public class SocksServer : IServer
     {
         using Socket tcpListener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         ConfigureSocket(tcpListener);
-        Dictionary<ISocket, ISocketHandler> selectableSockets = new Dictionary<ISocket, ISocketHandler>{
-            {new DefaultSocketWrapper(tcpListener), new ListenerHandler()}};
-        Dictionary<ISocket, ISocket> clientToServerSocketsMap = new Dictionary<ISocket, ISocket>();
+        List<SocketConnection> selectableSockets = new List<SocketConnection>
+        { new (new DefaultSocketWrapper(tcpListener), new ListenerHandler()) };
         while (true)
         {
-            List<Socket> sockets = selectableSockets.Keys.ToList().ConvertAll(socket => socket.GetSocket());
+            List<Socket> sockets = selectableSockets.ConvertAll(connection => connection.Client).
+                ConvertAll(socket => socket.GetSocket());
             Socket.Select(sockets, null, null, 1000);
             sockets.ForEach(selectedSocket =>
             {
-                ISocket wrappedSocket = selectableSockets.Keys.First(examinedSocket =>
-                    examinedSocket.GetSocket() == selectedSocket);
-                selectableSockets[wrappedSocket].Handle(wrappedSocket, selectableSockets, clientToServerSocketsMap);
+                SocketConnection? wrappedConnection = selectableSockets.Find(connection =>
+                 selectedSocket == connection.Client.GetSocket() || selectedSocket == connection.Server?.GetSocket());
+                wrappedConnection?.Handler.Handle(wrappedConnection, selectableSockets);
             });
             ClearSockets(selectableSockets);
         }

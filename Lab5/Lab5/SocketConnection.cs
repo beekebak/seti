@@ -4,9 +4,21 @@ using Lab5.SocketWrapper;
 
 namespace Lab5;
 
-public class SocketConnection
+public class SocketConnection : IDisposable
 {
-    private ISocket Client { get; set; }
-    private ISocket Server { get; set; }
-    private ISocketHandler Handler { get; set; }
+    public ISocket Client { get; set; }
+    public ISocket? Server { get; set; }
+    public ISocketHandler Handler { get; set; }
+
+    public SocketConnection(ISocket client, ISocketHandler handler)
+    {
+        Client = client;
+        Handler = handler;
+    }
+
+    public void Dispose()
+    {
+        Client.Dispose();
+        Server?.Dispose();
+    }
 }
