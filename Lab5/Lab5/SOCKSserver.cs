@@ -13,8 +13,8 @@ public class SocksServer : IServer
         foreach (var socketConnection in selectableSockets)
         {
             if(socketConnection.Handler is ListenerHandler) continue;
-            bool serverConnected = socketConnection.Server?.Connected() ?? false;
-            if(!socketConnection.Client.Connected() || serverConnected) socketsToClear.Add(socketConnection);
+            bool serverConnected = socketConnection.Server?.Connected() ?? true;
+            if(!socketConnection.Client.Connected() || !serverConnected) socketsToClear.Add(socketConnection);
         }
 
         foreach (var socket in socketsToClear)
@@ -41,15 +41,27 @@ public class SocksServer : IServer
         { new (new DefaultSocketWrapper(tcpListener), new ListenerHandler()) };
         while (true)
         {
-            List<Socket> sockets = selectableSockets.ConvertAll(connection => connection.Client).
-                ConvertAll(socket => socket.GetSocket());
-            Socket.Select(sockets, null, null, 1000);
-            sockets.ForEach(selectedSocket =>
+            try
             {
-                SocketConnection? wrappedConnection = selectableSockets.Find(connection =>
-                 selectedSocket == connection.Client.GetSocket() || selectedSocket == connection.Server?.GetSocket());
-                wrappedConnection?.Handler.Handle(wrappedConnection, selectableSockets);
-            });
+                List<Socket> sockets = selectableSockets.ConvertAll(connection => connection.Client)
+                    .ConvertAll(socket => socket.GetSocket()).
+                    Concat(selectableSockets.Where(connection => connection.Server != null).
+                        Select(socket => socket.Server!.GetSocket())).ToList();
+                Socket.Select(sockets, null, null, 1000);
+                sockets.ForEach(selectedSocket =>
+                {
+                    SocketConnection? wrappedConnection = selectableSockets.Find(connection =>
+                        selectedSocket == connection.Client.GetSocket() ||
+                        selectedSocket == connection.Server?.GetSocket());
+                    if(wrappedConnection?.Handler is ListenerHandler || wrappedConnection?.Client.Available() > 0 ||
+                       wrappedConnection?.Server?.Available() > 0)
+                    wrappedConnection.Handler?.Handle(wrappedConnection, selectableSockets);
+                });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
             ClearSockets(selectableSockets);
         }
     }

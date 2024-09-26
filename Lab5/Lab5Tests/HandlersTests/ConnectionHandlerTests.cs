@@ -10,7 +10,7 @@ namespace Lab5Tests.HandlersTests;
 public class ConnectionHandlerTests
 {
     [Fact]
-    public void AcceptsIPv4TcpConnection()
+    public void AcceptsIPv4TcpConnectionTest()
     {
         ISocketHandler handler = new ConnectionHandler();
         var socketMock = new Mock<ISocket>();
@@ -27,7 +27,7 @@ public class ConnectionHandlerTests
     }
 
     [Fact]
-    public void AcceptsDnsConnection()
+    public void AcceptsDnsConnectionTest()
     {
         ISocketHandler handler = new ConnectionHandler();
         var socketMock = new Mock<ISocket>();

@@ -1,3 +1,4 @@
+using System.Net.Sockets;
 using Lab5.SocketWrapper;
 
 namespace Lab5.SocketHandlers;
@@ -8,7 +9,15 @@ public class AuthorizationHandler : ISocketHandler
     {
         ISocket socket = connection.Client;
         byte[] buffer = new byte[258];
-        buffer = socket.Receive(buffer);
+        try
+        {
+            buffer = socket.Receive(buffer);
+        }
+        catch (SocketException e)
+        {
+            Console.WriteLine(e.Message);
+        }
+
         if (buffer[0] != 0x05)
         {
             socket.Close();

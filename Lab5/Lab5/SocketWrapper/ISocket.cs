@@ -11,4 +11,5 @@ public interface ISocket : IDisposable
     bool Connected();
     Socket GetSocket();
     bool Equals(ISocket? socket);
+    int Available();
 }

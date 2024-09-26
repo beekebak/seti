@@ -48,4 +48,9 @@ public class DefaultSocketWrapper(Socket socket) : ISocket
         }
         return false;
     }
+
+    public int Available()
+    {
+        return socket.Available;
+    }
 }
