@@ -1,5 +1,3 @@
-using Lab4Core.Abstractions;
-
 namespace Lab4Core.GameObjects;
 
 public class Snake

@@ -1,19 +1,17 @@
-using Lab4Core.Abstractions;
-
 namespace Lab4Core.GameObjects;
 
-public abstract class Cell: ICell
+public abstract class Cell
 {
     private readonly int _x;
     private readonly int _y;
     public (int, int) GetPosition() => (_x, _y);
     public abstract int GetColorId();
-    public Cell(int x, int y)
+    protected Cell(int x, int y)
     {
         _x = x;
         _y = y;
     }
-    public bool Equals(ICell other) => GetColorId() == other.GetColorId() && GetPosition() == other.GetPosition();
+    public bool Equals(Cell other) => GetColorId() == other.GetColorId() && GetPosition() == other.GetPosition();
 }
 
 public class FoodCell: Cell

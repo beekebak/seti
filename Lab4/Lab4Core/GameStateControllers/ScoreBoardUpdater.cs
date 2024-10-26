@@ -1,9 +1,8 @@
-using System.Collections.ObjectModel;
 using Lab4Core.GameObjects;
 
 namespace Lab4Core.GameStateControllers;
 
-public class ScoreBoardUpdater
+class ScoreBoardUpdater
 {
     private void UpdateFoodScore(List<Snake> aliveSnakes, HashSet<Snake> removedSnakes, GameField gameField,
         ScoreBoard scoreBoard)

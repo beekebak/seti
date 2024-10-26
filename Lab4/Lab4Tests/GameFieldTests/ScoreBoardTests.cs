@@ -1,4 +1,4 @@
-using Lab4Core.Abstractions;
+using Lab4Core;
 using Lab4Core.GameObjects;
 using Lab4Core.GameStateControllers;
 

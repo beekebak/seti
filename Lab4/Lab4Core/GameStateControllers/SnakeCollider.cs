@@ -2,7 +2,7 @@ using Lab4Core.GameObjects;
 
 namespace Lab4Core.GameStateControllers;
 
-public class SnakeCollider
+class SnakeCollider
 {
     private HashSet<Snake> GetSnakesToRemove(GameField tempField, IList<Snake> snakes,
         Dictionary<SnakeCell, Snake> headToSnake)

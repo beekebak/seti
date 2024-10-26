@@ -1,4 +1,4 @@
-namespace Lab4Core.Abstractions;
+namespace Lab4Core;
 
 public enum Directions
 {

@@ -1,15 +1,12 @@
-using Microsoft.Win32.SafeHandles;
-
 namespace Lab4Core.GameObjects;
 
 public class ScoreBoard
 {
-    private Dictionary<Snake, int> _scores = new Dictionary<Snake, int>();
+    private readonly Dictionary<Snake, int> _scores = new Dictionary<Snake, int>();
 
     public void UpdateScore(Snake snake, int scoreDiff)
     {
-        if(_scores.ContainsKey(snake)) _scores[snake] += scoreDiff;
-        else _scores.Add(snake, scoreDiff);
+        if(!_scores.TryAdd(snake, scoreDiff)) _scores[snake] += scoreDiff;
     }
     
     public int GetScore(Snake snake)

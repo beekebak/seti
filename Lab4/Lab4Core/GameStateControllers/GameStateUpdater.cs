@@ -1,10 +1,8 @@
-using Lab4Core.Abstractions;
 using Lab4Core.GameObjects;
-using static Lab4Core.Utility;
 
 namespace Lab4Core.GameStateControllers;
 
-public class GameStateUpdater : IGameStateUpdater
+public class GameStateUpdater
 {
     private readonly List<Snake> _snakes;
     private readonly GameField _gameField;

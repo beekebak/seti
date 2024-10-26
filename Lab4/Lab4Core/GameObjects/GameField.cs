@@ -1,27 +1,25 @@
-using Lab4Core.Abstractions;
-
 namespace Lab4Core.GameObjects;
 
 public class GameField
 {
-    private readonly List<List<ICell>> _field;
+    private readonly List<List<Cell>> _field;
 
     //initialize height*width 2D List with EmptyCell
     public GameField(int width, int height)
     {
         _field = Enumerable.Range(0, height)
             .Select(y => Enumerable.Range(0, width)
-                .Select(x => (ICell)new EmptyCell(x, y))
+                .Select(x => (Cell)new EmptyCell(x, y))
                 .ToList())
             .ToList();
     }
 
-    public ICell GetCell(int x, int y)
+    public Cell GetCell(int x, int y)
     {
         return _field[y][x];
     }
 
-    public void SetCell(ICell cell)
+    public void SetCell(Cell cell)
     {
         int tempX = cell.GetPosition().Item1;
         int tempY = cell.GetPosition().Item2;
