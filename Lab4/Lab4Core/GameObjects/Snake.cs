@@ -5,16 +5,17 @@ namespace Lab4Core.GameObjects;
 public class Snake
 {
     public IList<SnakeCell> Body { get; set; }
-    public Directions Direction { get; set; } = Directions.Left;
+    public Directions Direction { get; set; }
     public int Color { get; }
 
-    public Snake(IList<SnakeCell> initBody, int color)
+    public Snake(IList<SnakeCell> initBody, int color, Directions direction = Directions.Left)
     {
         Body = initBody;
         Color = color;
+        Direction = direction;
     }
 
-    public Snake(List<(int x, int y)> initBody, int color)
+    public Snake(List<(int x, int y)> initBody, int color, Directions direction = Directions.Left)
     {
         Body = new List<SnakeCell>();
         foreach (var coord in initBody)
@@ -22,6 +23,7 @@ public class Snake
             Body.Add(new SnakeCell(coord.x, coord.y, color));
         }
         Color = color;
+        Direction = direction;
     }
 
     public SnakeCell GetHead()

@@ -24,6 +24,13 @@ public class GameField
     {
         return _field[y][x];
     }
+
+    public void SetCell(ICell cell)
+    {
+        int tempX = cell.GetPosition().Item1;
+        int tempY = cell.GetPosition().Item2;
+        _field[tempY][tempX] = cell;
+    }
     
     public int GetWidth()
     {
