@@ -41,7 +41,7 @@ class SnakesMover
         }
     }
     
-    public void MoveSnakes(List<Snake> snakes, GameField field)
+    public void MoveSnakes(IList<Snake> snakes, GameField field)
     {
         foreach (var snake in snakes)
         {

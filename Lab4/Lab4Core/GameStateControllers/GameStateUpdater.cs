@@ -6,11 +6,11 @@ namespace Lab4Core.GameStateControllers;
 
 public class GameStateUpdater : IGameStateUpdater
 {
-    private readonly List<Snake> _snakes;
+    private readonly IList<Snake> _snakes;
     private readonly GameField _gameField;
     private readonly SnakesMover _snakesMover = new();
     
-    public GameStateUpdater(List<Snake> snakes, GameField gameField)
+    public GameStateUpdater(IList<Snake> snakes, GameField gameField)
     {
         _snakes = snakes;
         _gameField = gameField;

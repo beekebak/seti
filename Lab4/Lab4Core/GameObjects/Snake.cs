@@ -4,11 +4,11 @@ namespace Lab4Core.GameObjects;
 
 public class Snake
 {
-    public List<SnakeCell> Body { get; set; }
+    public IList<SnakeCell> Body { get; set; }
     public Directions Direction { get; set; } = Directions.Left;
     public int Color { get; }
 
-    public Snake(List<SnakeCell> initBody, int color)
+    public Snake(IList<SnakeCell> initBody, int color)
     {
         Body = initBody;
         Color = color;
