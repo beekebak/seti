@@ -15,7 +15,7 @@ public class SnakesCollisionsTests
         Snake snakeCollider = new Snake(colliderSnakeBody, 2, Directions.Up); 
         GameField field = new GameField(5, 5);
         var snakes = new List<Snake>{snakeCollided, snakeCollider};
-        GameStateUpdater updater = new GameStateUpdater(snakes, field, new Mock<ScoreBoard>().Object);
+        GameStateUpdater updater = new GameStateUpdater(snakes, field, new ScoreBoard());
             
         updater.Update();
         
@@ -29,7 +29,7 @@ public class SnakesCollisionsTests
         var snakeBody = new List<(int x, int y)>{(1,1), (1,2), (2,2), (2,1), (2,0)};
         GameField field = new GameField(5, 5);
         var snakes = new List<Snake> {new Snake(snakeBody, 1, Directions.Right)};
-        GameStateUpdater updater = new GameStateUpdater(snakes, field, new Mock<ScoreBoard>().Object);
+        GameStateUpdater updater = new GameStateUpdater(snakes, field, new ScoreBoard());
         
         updater.Update();
         
@@ -45,7 +45,7 @@ public class SnakesCollisionsTests
         Snake snakeCollider = new Snake(colliderSnakeBody, 2, Directions.Left); 
         GameField field = new GameField(6, 5);
         var snakes = new List<Snake>{snakeCollided, snakeCollider};
-        GameStateUpdater updater = new GameStateUpdater(snakes, field, new Mock<ScoreBoard>().Object);
+        GameStateUpdater updater = new GameStateUpdater(snakes, field, new ScoreBoard());
             
         updater.Update();
         
@@ -58,7 +58,7 @@ public class SnakesCollisionsTests
         var snakeBody = new List<(int x, int y)>{(1,1), (1,2), (2,2), (2,1)};
         GameField field = new GameField(5, 5);
         var snakes = new List<Snake> {new Snake(snakeBody, 1, Directions.Right)};
-        GameStateUpdater updater = new GameStateUpdater(snakes, field, new Mock<ScoreBoard>().Object);
+        GameStateUpdater updater = new GameStateUpdater(snakes, field, new ScoreBoard());
         
         updater.Update();
         
@@ -74,7 +74,7 @@ public class SnakesCollisionsTests
         Snake snakeCollider = new Snake(colliderSnakeBody, 2, Directions.Left); 
         GameField field = new GameField(6, 5);
         var snakes = new List<Snake>{snakeCollided, snakeCollider};
-        GameStateUpdater updater = new GameStateUpdater(snakes, field, new Mock<ScoreBoard>().Object);
+        GameStateUpdater updater = new GameStateUpdater(snakes, field, new ScoreBoard());
             
         updater.Update();
         
@@ -90,7 +90,7 @@ public class SnakesCollisionsTests
         Snake snakeCollider = new Snake(colliderSnakeBody, 2, Directions.Down); 
         GameField field = new GameField(6, 5);
         var snakes = new List<Snake>{snakeCollided, snakeCollider};
-        GameStateUpdater updater = new GameStateUpdater(snakes, field, new Mock<ScoreBoard>().Object);
+        GameStateUpdater updater = new GameStateUpdater(snakes, field, new ScoreBoard());
             
         updater.Update();
         
@@ -106,7 +106,7 @@ public class SnakesCollisionsTests
         Snake snakeCollider = new Snake(colliderSnakeBody, 2, Directions.Left); 
         GameField field = new GameField(6, 5);
         var snakes = new List<Snake>{snakeCollided, snakeCollider};
-        GameStateUpdater updater = new GameStateUpdater(snakes, field, new Mock<ScoreBoard>().Object);
+        GameStateUpdater updater = new GameStateUpdater(snakes, field, new ScoreBoard());
             
         updater.Update();
         
