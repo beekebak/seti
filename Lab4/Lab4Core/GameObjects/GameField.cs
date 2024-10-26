@@ -6,18 +6,14 @@ public class GameField
 {
     private readonly List<List<ICell>> _field;
 
+    //initialize height*width 2D List with EmptyCell
     public GameField(int width, int height)
     {
-        _field = new List<List<ICell>>(height);
-        for (int y = 0; y < height; y++)
-        {
-            var tempList = new List<ICell>(width);
-            for (int x = 0; x < width; x++)
-            {
-                tempList.Add(new EmptyCell(x, y));
-            }
-            _field.Add(tempList);
-        }
+        _field = Enumerable.Range(0, height)
+            .Select(y => Enumerable.Range(0, width)
+                .Select(x => (ICell)new EmptyCell(x, y))
+                .ToList())
+            .ToList();
     }
 
     public ICell GetCell(int x, int y)
