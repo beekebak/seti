@@ -30,4 +30,9 @@ public class Snake
     {
         return Body[0];
     }
+
+    public bool ContainsCell(Cell cell)
+    {
+        return Body.Any(snakeCell => snakeCell.GetPosition() == cell.GetPosition());
+    }
 }

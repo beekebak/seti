@@ -29,12 +29,13 @@ public class SnakeCollider
         return snakeToRemove;
     }
     
-    public void CollideSnakes(List<Snake> snakes, int width, int height)
+    public void CollideSnakes(List<Snake> snakes, out HashSet<Snake> removedSnakes, int width, int height)
     {
         var headToSnake = new Dictionary<SnakeCell, Snake>();
         snakes.ToList().ForEach(snake => headToSnake.Add(snake.GetHead(), snake));
         GameField tempField = new GameField(width, height);
         var snakesToRemove = GetSnakesToRemove(tempField, snakes, headToSnake);
         snakes.RemoveAll(snake => snakesToRemove.Contains(snake));
+        removedSnakes = snakesToRemove;
     }
 }

@@ -7,4 +7,5 @@ public class GameContext
     private IList<Snake> _snakes;
     private int _foodCount;
     private IGameStateUpdater _gameStateUpdater;
+    private ScoreBoard _scoreBoard;
 }
