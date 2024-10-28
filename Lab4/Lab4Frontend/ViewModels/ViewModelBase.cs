@@ -4,4 +4,7 @@ namespace Lab4Frontend.ViewModels;
 
 public class ViewModelBase : ObservableObject
 {
+    public ViewModelBase()
+    {
+    }
 }

@@ -36,5 +36,6 @@ public class GameStateUpdater
         _gameFieldUpdater.UpdateGameField(_snakes, removedSnakes, _gameField, FixFoodCount());
         var newSnakes = _snakeSpawner.Spawn(newSnakesCount, _gameField);
         _gameFieldUpdater.AddNewSnakes(newSnakes, _gameField);
+        _snakes.AddRange(newSnakes);
     }
 }
