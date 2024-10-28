@@ -31,7 +31,7 @@ public class GameFieldUpdateTests
         
         updater.Update();
         
-        Assert.True(field.GetCell(3, 3) is not SnakeCell);
+        Assert.IsNotType<SnakeCell>(field.GetCell(3, 3));
     }
 
     [Fact]

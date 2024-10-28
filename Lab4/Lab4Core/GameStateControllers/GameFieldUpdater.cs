@@ -4,7 +4,7 @@ namespace Lab4Core.GameStateControllers;
 
 class GameFieldUpdater
 {
-    private void MoveAliveSnakes(List<Snake> snakes, GameField gameField)
+    private void AddSnakes(List<Snake> snakes, GameField gameField)
     {
         snakes.ForEach(snake => snake.Body.ToList().ForEach(gameField.SetCell));
     }
@@ -65,8 +65,13 @@ class GameFieldUpdater
         int minFoodCount)
     {
         ClearOldSnakes(gameField);
-        MoveAliveSnakes(snakes, gameField);
+        AddSnakes(snakes, gameField);
         DestroySnakes(gameField, removedSnakes);
         FixFood(gameField, minFoodCount);
+    }
+
+    public void AddNewSnakes(List<Snake> newSnakes, GameField gameField)
+    {
+        AddSnakes(newSnakes, gameField);
     }
 }
