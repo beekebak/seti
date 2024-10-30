@@ -12,6 +12,13 @@
         <vm:MainWindowViewModel/>
     </Window.DataContext>
     
+    <Window.KeyBindings>
+        <KeyBinding Gesture="W" Command="{Binding WKey}"></KeyBinding>
+        <KeyBinding Gesture="A" Command="{Binding AKey}"></KeyBinding>
+        <KeyBinding Gesture="S" Command="{Binding SKey}"></KeyBinding>
+        <KeyBinding Gesture="D" Command="{Binding DKey}"></KeyBinding>
+    </Window.KeyBindings>
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="7*" />
@@ -38,7 +45,7 @@
 
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Rectangle Width="50" Height="50" Fill="{Binding}" Margin="2"/>
+                                        <Rectangle Width="14" Height="14" Fill="{Binding}" Margin="2"/>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
@@ -95,21 +102,6 @@
                     </Grid>
                 </Border>
                 <Border Grid.Row="1" Grid.Column="1" Background="LightYellow">
-                    <StackPanel>
-                        <TextBlock Text="Размер поля для новой игры"
-                                   HorizontalAlignment="Stretch"
-                                   VerticalAlignment="Stretch"
-                                   Margin="0"
-                                   TextAlignment="Center"/>
-                        <TextBox Text="{Binding Height, Mode=TwoWay}"
-                                 HorizontalAlignment="Stretch"
-                                 VerticalAlignment="Stretch"
-                                 Margin="0"/>
-                        <TextBox Text="{Binding Width, Mode=TwoWay}"
-                                 HorizontalAlignment="Stretch"
-                                 VerticalAlignment="Stretch"
-                                 Margin="0"/>
-                    </StackPanel>
                 </Border>
             </Grid>
 

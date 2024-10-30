@@ -11,11 +11,11 @@ public class SnakeSpawnTests
     {
         GameField field = new GameField(7, 7);
         var snakes = new List<Snake>();
-        foreach(var i in (int[])[0,1,4]) foreach(var j in (int[])[0,3,6]) 
-            if(i != 4 || j != 3) snakes.Add(new Snake([(i, j)], 1, Directions.Left));
+        foreach(var i in (int[])[0,3,6]) foreach(var j in (int[])[0,3,6]) 
+            if(i != 3 || j != 3) field.SetCell(new SnakeCell(i, j, 1));
         GameStateUpdater updater = new GameStateUpdater(snakes, field, new ScoreBoard());
         
-        updater.Update(1);
+        updater.SpawnSnake();
 
         Assert.IsType<SnakeCell>(field.GetCell(3, 3));
         var tail = new List<(int, int)>{(3,2), (3,4), (2,3), (4,3)};
@@ -35,7 +35,7 @@ public class SnakeSpawnTests
             }
         }
         
-        updater.Update(1);
+        updater.SpawnSnake();
 
         for (int y = 0; y < field.GetHeight(); y++)
         {

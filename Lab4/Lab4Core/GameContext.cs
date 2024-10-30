@@ -1,36 +1,42 @@
+using System.Text.Json;
 using Lab4Core.GameStateControllers;
 using Lab4Core.GameObjects;
+
 namespace Lab4Core;
 
 public class GameContext
 {
-    private GameField _field;
-    public GameField Field => _field;
-    private List<Snake> _snakes;
-    private int _foodCount;
+    public GameField Field { get; }
+    public List<Snake> Snakes { get; }
+    public int FoodCount { get; }
+    public ScoreBoard ScoreBoard { get; }
+    public int Delay { get; }
     private GameStateUpdater _gameStateUpdater;
-    private ScoreBoard _scoreBoard;
-    public ScoreBoard ScoreBoard => _scoreBoard;
 
-    public GameContext()
+    private GameContext(int width, int height, int foodCount, int delay)
     {
-        _field = new GameField(0, 0);
-        _snakes = new List<Snake>();
-        _foodCount = 5;
-        _scoreBoard = new ScoreBoard();
-        _gameStateUpdater = new GameStateUpdater(_snakes, _field, _scoreBoard, _foodCount);
+        Field = new GameField(width, height);
+        Snakes = new List<Snake>();
+        FoodCount = foodCount;
+        ScoreBoard = new ScoreBoard();
+        Delay = delay;
+        _gameStateUpdater = new GameStateUpdater(Snakes, Field, ScoreBoard, FoodCount);
+    }
+    
+    public static GameContext InitContext()
+    {
+        static string Path()
+        {
+            return "Config/GameContext.json";
+        }
+        int[]? args = JsonSerializer.Deserialize<int[]>(File.ReadAllText(Path())); 
+        return new GameContext(args![0], args[1], args[2], args[3]);
     }
 
-    public void InitContext(int width, int height)
+    public void Play()
     {
-        _field = new GameField(width, height);
-        _snakes = new List<Snake>();
-        _scoreBoard = new ScoreBoard();
-        _gameStateUpdater = new GameStateUpdater(_snakes, _field, _scoreBoard, _foodCount);
+        _gameStateUpdater.Update();
     }
 
-    public void UpdateGameState(int snakeCount = 0)
-    {
-        _gameStateUpdater.Update(snakeCount);
-    }
+    public Snake? GetNewSnake() => _gameStateUpdater.SpawnSnake();
 }

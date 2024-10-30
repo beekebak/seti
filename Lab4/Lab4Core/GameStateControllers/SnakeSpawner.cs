@@ -77,7 +77,7 @@ class SnakeSpawner
         throw new Exception("Couldn't make snake because food everywhere");
     }
 
-    private List<Snake> GetNewSnakes(GameField field, bool[,] fieldCopy, int count)
+    private Snake? GetNewSnake(GameField field, bool[,] fieldCopy)
     {
         var random = new Random();
         IEnumerable<(int, int)> falseCells = 
@@ -86,13 +86,15 @@ class SnakeSpawner
                     .Where(j => !fieldCopy[i, j])
                     .Select(j => (j, i))
                     .OrderBy(_ => random.Next()));
-        return falseCells.Select(coords => MakeNewSnake(coords, field)).Take(count).ToList();
+        var coords = falseCells.FirstOrDefault((-1, -1));
+        if(coords == (-1, -1)) return null;
+        return MakeNewSnake(coords, field);
     }
     
-    public List<Snake> Spawn(int newSnakesCount, GameField field)
+    public Snake? Spawn(GameField field)
     {
-            bool[,] fieldCopy = new bool[field.GetHeight(), field.GetWidth()];
-            CheckUnavailability(field, fieldCopy);
-            return GetNewSnakes(field, fieldCopy, newSnakesCount);
+        bool[,] fieldCopy = new bool[field.GetHeight(), field.GetWidth()];
+        CheckUnavailability(field, fieldCopy);
+        return GetNewSnake(field, fieldCopy);
     }
 }
