@@ -15,7 +15,7 @@ public class SnakeSpawnTests
             if(i != 3 || j != 3) field.SetCell(new SnakeCell(i, j, 1));
         GameStateUpdater updater = new GameStateUpdater(snakes, field, new ScoreBoard());
         
-        updater.SpawnSnake();
+        updater.SpawnSnake(1);
 
         Assert.IsType<SnakeCell>(field.GetCell(3, 3));
         var tail = new List<(int, int)>{(3,2), (3,4), (2,3), (4,3)};
@@ -35,7 +35,7 @@ public class SnakeSpawnTests
             }
         }
         
-        updater.SpawnSnake();
+        updater.SpawnSnake(1);
 
         for (int y = 0; y < field.GetHeight(); y++)
         {

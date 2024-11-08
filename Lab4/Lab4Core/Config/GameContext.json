@@ -1,1 +1,7 @@
-[40, 30, 1, 1000]
+{
+  "Width": 40,
+  "Height": 30,
+  "Food": 1,
+  "Timeout": 1000,
+  "Name": "beek"
+}

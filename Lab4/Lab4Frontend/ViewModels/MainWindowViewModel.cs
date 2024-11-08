@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
-using Avalonia;
 using Avalonia.Media;
 using Avalonia.Threading;
 using Lab4.NetworkService.Players;
@@ -25,7 +24,7 @@ public partial class MainWindowViewModel : ReactiveObject
     public ICommand DKey { get; }
 
     private static readonly List<Color> AllColors = [Colors.Aqua, Colors.Blue, Colors.Brown, Colors.Crimson,
-        Colors.DarkMagenta, Colors.Gray, Colors.Lime, Colors.Magenta, Colors.Khaki, Colors.Orange]; 
+        Colors.DarkMagenta, Colors.Gray, Colors.LemonChiffon, Colors.Magenta, Colors.Khaki, Colors.Orange]; 
     private readonly Dictionary<int, Color> _snakeColorToRealColorMap = new()
     {
         { 0, Colors.Black },
@@ -57,15 +56,16 @@ public partial class MainWindowViewModel : ReactiveObject
     public void EndGame()
     {
         _player?.Dispose();
+        _snakeColorToRealColorMap.Clear();
     }
 
     private void UpdateScoreTableView()
     {
-        var scoreTable = _player!.Context!.ScoreBoard;
+        var scoreTable = _player!.GetScores();
         ScoreTable.Clear();
-        foreach (var score in scoreTable.GetSnakesAndScores())
+        foreach (var score in scoreTable)
         {
-            ScoreTable.Add(score.Key.Color.ToString() + "   :   " +score.Value.ToString());
+            ScoreTable.Add(score.Item1 + "   :   " +score.Item2);
         }
     }
 

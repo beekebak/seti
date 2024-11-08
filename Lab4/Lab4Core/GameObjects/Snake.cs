@@ -4,23 +4,23 @@ public class Snake
 {
     public IList<SnakeCell> Body { get; }
     public Directions Direction { get; set; }
-    public int Color { get; }
+    public int PlayerId { get; }
 
     public Snake(IList<SnakeCell> initBody, int color, Directions direction = Directions.Left)
     {
         Body = initBody;
-        Color = color;
+        PlayerId = color;
         Direction = direction;
     }
 
-    public Snake(List<(int x, int y)> initBody, int color, Directions direction = Directions.Left)
+    public Snake(List<(int x, int y)> initBody, int id, Directions direction = Directions.Left)
     {
         Body = new List<SnakeCell>();
         foreach (var coord in initBody)
         {
-            Body.Add(new SnakeCell(coord.x, coord.y, color));
+            Body.Add(new SnakeCell(coord.x, coord.y, id));
         }
-        Color = color;
+        PlayerId = id;
         Direction = direction;
     }
 

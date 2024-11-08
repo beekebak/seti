@@ -14,19 +14,19 @@ class SnakesMover
         {
             case Directions.Left:
                 newCell = new SnakeCell(GetNewCoord(oldX, -1, field.GetWidth()),
-                    GetNewCoord(oldY, 0, field.GetHeight()), snake.Color);
+                    GetNewCoord(oldY, 0, field.GetHeight()), snake.PlayerId);
                 break;
             case Directions.Down:
                 newCell = new SnakeCell(GetNewCoord(oldX, 0, field.GetWidth()),
-                    GetNewCoord(oldY, -1, field.GetHeight()), snake.Color);
+                    GetNewCoord(oldY, -1, field.GetHeight()), snake.PlayerId);
                 break;
             case Directions.Right:
                 newCell = new SnakeCell(GetNewCoord(oldX, 1, field.GetWidth()),
-                    GetNewCoord(oldY, 0, field.GetHeight()), snake.Color);
+                    GetNewCoord(oldY, 0, field.GetHeight()), snake.PlayerId);
                 break;
             case Directions.Up:
                 newCell = new SnakeCell(GetNewCoord(oldX, 0, field.GetWidth()),
-                    GetNewCoord(oldY, 1, field.GetHeight()), snake.Color);
+                    GetNewCoord(oldY, 1, field.GetHeight()), snake.PlayerId);
                 break;
         }
         return newCell;

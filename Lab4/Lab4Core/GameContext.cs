@@ -23,14 +23,9 @@ public class GameContext
         _gameStateUpdater = new GameStateUpdater(Snakes, Field, ScoreBoard, FoodCount);
     }
     
-    public static GameContext InitContext()
+    public static GameContext InitContext(int width, int height, int foodCount, int timeout)
     {
-        static string Path()
-        {
-            return "Config/GameContext.json";
-        }
-        int[]? args = JsonSerializer.Deserialize<int[]>(File.ReadAllText(Path())); 
-        return new GameContext(args![0], args[1], args[2], args[3]);
+        return new GameContext(width, height, foodCount, timeout);
     }
 
     public void Play()
@@ -38,5 +33,5 @@ public class GameContext
         _gameStateUpdater.Update();
     }
 
-    public Snake? GetNewSnake() => _gameStateUpdater.SpawnSnake();
+    public Snake? GetNewSnake(int id) => _gameStateUpdater.SpawnSnake(id);
 }

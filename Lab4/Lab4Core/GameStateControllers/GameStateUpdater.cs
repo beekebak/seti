@@ -28,9 +28,9 @@ public class GameStateUpdater
         return _foodStatic + _snakes.Count;
     }
 
-    public Snake? SpawnSnake()
+    public Snake? SpawnSnake(int id)
     {
-        var newSnake = _snakeSpawner.Spawn(_gameField);
+        var newSnake = _snakeSpawner.Spawn(_gameField, id);
         if (newSnake == null) return newSnake;
         _gameFieldUpdater.AddNewSnakes([newSnake], _gameField);
         _snakes.Add(newSnake);

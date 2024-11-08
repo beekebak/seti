@@ -3,9 +3,9 @@ using Snakes;
 
 namespace Lab4.NetworkService;
 
-public class Converter
+public static class Converter
 {
-    public Directions GetDirection(Direction dir)
+    public static Directions GetDirection(this Direction dir)
     {
         switch (dir)
         {
@@ -17,7 +17,7 @@ public class Converter
         throw new Exception("Invalid Direction DTO");
     }
 
-    public Direction GetDirectionDto(Directions dir)
+    public static Direction GetDirectionDto(this Directions dir)
     {
         switch (dir)
         {
@@ -28,4 +28,6 @@ public class Converter
         }
         throw new Exception("Invalid Direction");
     }
+    
+    
 }

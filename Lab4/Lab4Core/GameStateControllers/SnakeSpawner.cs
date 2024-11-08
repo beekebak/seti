@@ -38,7 +38,7 @@ class SnakeSpawner
         }
     }
 
-    private Snake MakeNewSnake((int, int) coords, GameField field)
+    private Snake MakeNewSnake((int, int) coords, GameField field, int id)
     {
         int x = coords.Item1;
         int y = coords.Item2;
@@ -54,22 +54,22 @@ class SnakeSpawner
                 case Directions.Up:
                     fixedY = GetNewCoord(y, 1, field.GetHeight());
                     if (field.GetCell(x, fixedY) is not FoodCell)
-                        return new Snake([(x, y), (x, fixedY)], random.Next(), Directions.Down);
+                        return new Snake([(x, y), (x, fixedY)], id, Directions.Down);
                     break;
                 case Directions.Down:
                     fixedY = GetNewCoord(y, -1, field.GetHeight());
                     if (field.GetCell(x, fixedY) is not FoodCell)
-                        return new Snake([(x, y), (x, fixedY)], random.Next(), Directions.Up);
+                        return new Snake([(x, y), (x, fixedY)], id, Directions.Up);
                     break;
                 case Directions.Left:
                     fixedX = GetNewCoord(y, -1, field.GetWidth());
                     if (field.GetCell(fixedX, y) is not FoodCell)
-                        return new Snake([(x, y), (fixedX, y)], random.Next(), Directions.Right);
+                        return new Snake([(x, y), (fixedX, y)], id, Directions.Right);
                     break;
                 case Directions.Right:
                     fixedX = GetNewCoord(y, 1, field.GetWidth());
                     if (field.GetCell(fixedX, y) is not FoodCell)
-                        return new Snake([(x, y), (fixedX, y)], random.Next(), Directions.Left);
+                        return new Snake([(x, y), (fixedX, y)], id, Directions.Left);
                     break;
             }
         }
@@ -77,7 +77,7 @@ class SnakeSpawner
         throw new Exception("Couldn't make snake because food everywhere");
     }
 
-    private Snake? GetNewSnake(GameField field, bool[,] fieldCopy)
+    private Snake? GetNewSnake(GameField field, bool[,] fieldCopy, int id)
     {
         var random = new Random();
         IEnumerable<(int, int)> falseCells = 
@@ -88,13 +88,13 @@ class SnakeSpawner
                     .OrderBy(_ => random.Next()));
         var coords = falseCells.FirstOrDefault((-1, -1));
         if(coords == (-1, -1)) return null;
-        return MakeNewSnake(coords, field);
+        return MakeNewSnake(coords, field, id);
     }
     
-    public Snake? Spawn(GameField field)
+    public Snake? Spawn(GameField field, int id)
     {
         bool[,] fieldCopy = new bool[field.GetHeight(), field.GetWidth()];
         CheckUnavailability(field, fieldCopy);
-        return GetNewSnake(field, fieldCopy);
+        return GetNewSnake(field, fieldCopy, id);
     }
 }
