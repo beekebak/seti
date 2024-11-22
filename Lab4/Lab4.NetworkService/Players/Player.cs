@@ -1,7 +1,5 @@
-using System.Text.Json;
 using Lab4Core;
 using Lab4Core.GameObjects;
-using Snakes;
 using GameConfig = Lab4Core.GameConfig;
 
 namespace Lab4.NetworkService.Players;
@@ -11,21 +9,16 @@ public abstract class Player : IDisposable
     public Snake? RelatedSnake { get; protected set; }
     public GameContext? Context { get; protected set; }
 
-    public string Name { get; }
+    public string Name { get; protected set; }
     public int Id { get; } = NetworkContext.GetNewPlayerIndex();
-    protected GameConfig Config { get; }
+    public bool IsDead { get; protected set; } = false;
+    protected GameConfig Config { get; set; }
     public event EventHandler<EventArgs>? ModelUpdated;
     protected void OnModelUpdated(EventArgs e) => ModelUpdated?.Invoke(this, e);
 
+    
     protected Player()
     {
-        static string Path()
-        {
-            return "Config/GameContext.json";
-        }
-        Config = JsonSerializer.Deserialize<GameConfig>(File.ReadAllText(Path()));
-        if(Config == null) throw new FormatException("bad GameConfig");
-        Name = Config.Name;
     }
     
     public virtual void Move(Directions direction)
@@ -46,9 +39,12 @@ public abstract class Player : IDisposable
         ModelUpdated = null;
     }
 
-    public abstract NodeRole GetNodeRole();
-
     public abstract List<(string, int)> GetScores();
+
+    public int GetScore()
+    {
+        return Context!.ScoreBoard.GetScore(RelatedSnake);
+    }
     
     public abstract void Dispose();
 }

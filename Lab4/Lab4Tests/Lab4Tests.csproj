@@ -24,6 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Lab4.NetworkService\Lab4.NetworkService.csproj" />
       <ProjectReference Include="..\Lab4Core\Lab4Core.csproj" />
     </ItemGroup>
 

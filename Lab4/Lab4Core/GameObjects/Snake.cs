@@ -6,13 +6,6 @@ public class Snake
     public Directions Direction { get; set; }
     public int PlayerId { get; }
 
-    public Snake(IList<SnakeCell> initBody, int color, Directions direction = Directions.Left)
-    {
-        Body = initBody;
-        PlayerId = color;
-        Direction = direction;
-    }
-
     public Snake(List<(int x, int y)> initBody, int id, Directions direction = Directions.Left)
     {
         Body = new List<SnakeCell>();

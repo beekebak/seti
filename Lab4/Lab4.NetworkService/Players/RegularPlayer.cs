@@ -9,11 +9,6 @@ public class RegularPlayer: Player
         throw new NotImplementedException();
     }
 
-    public override NodeRole GetNodeRole()
-    {
-        return NodeRole.Normal;
-    }
-
     public override List<(string, int)> GetScores()
     {
         throw new NotImplementedException();

@@ -35,4 +35,17 @@ public class GameField
     {
         return _field.Count;
     }
+
+    public List<(int x, int y)> GetFoodPositions()
+    {
+        List<(int x, int y)> positions = new List<(int x, int y)>();
+        for (int i = 0; i < _field.Count; i++)
+        {
+            for (int j = 0; j < _field[i].Count; j++)
+            {
+                if(_field[i][j] is FoodCell cell) positions.Add(cell.GetPosition());
+            }
+        }
+        return positions;
+    }
 }

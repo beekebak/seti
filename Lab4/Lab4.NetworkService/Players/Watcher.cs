@@ -12,11 +12,6 @@ public class Watcher: Player
 
     public override void Move(Directions direction) { }
 
-    public override NodeRole GetNodeRole()
-    {
-        return NodeRole.Viewer;
-    }
-
     public override List<(string, int)> GetScores()
     {
         throw new NotImplementedException();
