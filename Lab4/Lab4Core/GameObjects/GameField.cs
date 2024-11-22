@@ -16,14 +16,14 @@ public class GameField
 
     public Cell GetCell(int x, int y)
     {
-        return _field[y][x];
+        return _field[GetHeight()-1-y][x];
     }
 
     public void SetCell(Cell cell)
     {
         int tempX = cell.GetPosition().Item1;
         int tempY = cell.GetPosition().Item2;
-        _field[tempY][tempX] = cell;
+        _field[GetHeight()-1-tempY][tempX] = cell;
     }
     
     public int GetWidth()
