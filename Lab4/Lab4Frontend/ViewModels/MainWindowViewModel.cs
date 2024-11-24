@@ -28,9 +28,9 @@ public partial class MainWindowViewModel : ReactiveObject
     private readonly Dictionary<int, Color> _snakeColorToRealColorMap = new()
     {
         { 0, Colors.Black },
-        { 1, Colors.Green }
+        { -1, Colors.Green }
     };
-    private Player? _player;
+    private Master? _player;
     
     public MainWindowViewModel()
     {

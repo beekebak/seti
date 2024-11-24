@@ -4,7 +4,7 @@ public abstract class Cell
 {
     private readonly int _x;
     private readonly int _y;
-    public (int, int) GetPosition() => (_x, _y);
+    public (int x, int y) GetPosition() => (_x, _y);
     public abstract int GetColorId();
     protected Cell(int x, int y)
     {
@@ -17,7 +17,7 @@ public abstract class Cell
 public class FoodCell: Cell
 {
     public FoodCell(int x, int y) : base(x, y) { }
-    public override int GetColorId() => 1;
+    public override int GetColorId() => -1;
 }
 
 public class EmptyCell: Cell

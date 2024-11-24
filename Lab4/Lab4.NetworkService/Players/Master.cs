@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Lab4Core;
 using Snakes;
+using GameConfig = Lab4Core.GameConfig;
 
 namespace Lab4.NetworkService.Players;
 
@@ -23,7 +24,6 @@ public class Master: Player
         }
         Config = JsonSerializer.Deserialize<Lab4Core.GameConfig>(File.ReadAllText(Path()));
         if(Config == null) throw new FormatException("bad GameConfig");
-        Name = Config.Name;
     }
     
     public override void StartGame()
@@ -51,5 +51,15 @@ public class Master: Player
             scores.Add((player.Name, Context!.ScoreBoard.GetScore(player.RelatedSnake)));
         }
         return scores;
+    }
+
+    public void UpdateContext(GameContext newContext)
+    {
+        Context = newContext;
+    }
+
+    public GameConfig GetConfig()
+    {
+        return Config;
     }
 }

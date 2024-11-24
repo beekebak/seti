@@ -87,7 +87,7 @@ public static class Converter
 
     public static Snakes.GameConfig GetGameConfigDto(Lab4Core.GameConfig config)
     {
-        return new Snakes.GameConfig()
+        return new Snakes.GameConfig
         {
             Width = config.Width,
             Height = config.Height,
@@ -98,7 +98,7 @@ public static class Converter
 
     public static Lab4Core.GameConfig GetGameConfig(Snakes.GameConfig config)
     {
-        return new Lab4Core.GameConfig()
+        return new Lab4Core.GameConfig
         {
             Food = config.FoodStatic,
             Height = config.Height,
@@ -116,29 +116,52 @@ public static class Converter
         };
     }
     
-    public static (int, int) GetCoord(GameState.Types.Coord coord)
+    public static GameState.Types.Coord GetCoordDto((int x, int y) coords)
+    {
+        return new GameState.Types.Coord()
+        {
+            X = coords.x,
+            Y = coords.y
+        };
+    }
+    
+    public static (int, int) GetCoordinates(GameState.Types.Coord coord)
     {
         return (coord.X, coord.Y);
     }
 
-    /*public static GameState.Types.Snake GetSnakeDto(Lab4Core.GameObjects.Snake snake, int id, bool alive)
+    public static GameState.Types.Snake GetSnakeDto(Lab4Core.GameObjects.Snake snake, int id, bool alive)
     {
-        return new GameState.Types.Snake()
+        List<GameState.Types.Coord> points = new List<GameState.Types.Coord>{GetCoordDto(snake.Body[0].GetPosition())};
+        for(int i = 1; i < snake.Body.Count; i++)
+        {
+            int deltaX = snake.Body[i].GetPosition().x - snake.Body[i-1].GetPosition().y;
+            int deltaY = snake.Body[i].GetPosition().x - snake.Body[i-1].GetPosition().y;
+            points.Add(GetCoordDto(deltaX, deltaY)); 
+        }
+        return new GameState.Types.Snake
         {
             PlayerId = id,
-            //WRONG Points = { snake.Body.ToList().ConvertAll(cell => GetCoordDto(cell.GetPosition().Item1, cell.GetPosition().Item2)) },
+            Points = { points },
             State = alive ? GameState.Types.Snake.Types.SnakeState.Alive : GameState.Types.Snake.Types.SnakeState.Zombie,
             HeadDirection = GetDirectionDto(snake.GetForbiddenDirection())
         };
-    }*/
+    }
 
     public static Lab4Core.GameObjects.Snake GetSnake(GameState.Types.Snake snake)
     {
-        return new Lab4Core.GameObjects.Snake(snake.Points.ToList().ConvertAll(GetCoord),
+        List<(int, int)> snakeBody = new List<(int, int)> { GetCoordinates(snake.Points[0]) };
+        for (int i = 1; i < snake.Points.Count; i++)
+        {
+            int parsedX = snake.Points[i].X + snake.Points[i-1].X;
+            int parsedY = snake.Points[i].Y + snake.Points[i-1].Y;
+            snakeBody.Add((parsedX, parsedY));
+        }
+        return new Lab4Core.GameObjects.Snake(snake.Points.ToList().ConvertAll(GetCoordinates),
             snake.PlayerId, GetDirection(snake.HeadDirection));
     }
     
-    /*public static GameState GetGameStateDto(Master master)
+    public static GameState GetGameStateDto(Master master)
     {
         var players = new GamePlayers();
         players.Players.AddRange(master.Players.ConvertAll(player => GetPlayerDto(player)));
@@ -150,19 +173,44 @@ public static class Converter
             Players = players
         };
     }
-
-    public static void ParseGameStateDto(GameState state, out GameField field, out List<Snake> snakes, out List<Player> players)
+    
+    public static void ParseGameStateDto(GameState state, out List<(int x, int y)> foodCoords,
+                                         out List<Lab4Core.GameObjects.Snake> snakes, out List<Player> players,
+                                         out ScoreBoard scores)
     {
-        
+        foodCoords = state.Foods.ToList().ConvertAll(GetCoordinates);
+        snakes = state.Snakes.ToList().ConvertAll(GetSnake);
+        players = new List<Player>();
+        scores = new ScoreBoard();
+        int usedSnakesCount = 0;
+        foreach (var player in state.Players.Players)
+        {
+            var current = GetPlayer(player.Role);
+            if (current is not Watcher)
+            {
+                bool dead = state.Snakes[usedSnakesCount].State == GameState.Types.Snake.Types.SnakeState.Alive;
+                current.UpdateData(player.Id, player.Name, snakes[usedSnakesCount], dead);
+                scores.UpdateScore(snakes[usedSnakesCount], player.Score);
+                usedSnakesCount++;
+            }
+        }
+    }
+    public static GameAnnouncement GetGameAnnouncementDto(Master master)
+    {
+        var players = new GamePlayers();
+        players.Players.AddRange(master.Players.ConvertAll(player => GetPlayerDto(player)));
+        return new GameAnnouncement
+        {
+            Players = players,
+            Config = GetGameConfigDto(master.GetConfig()),
+            GameName = master.GetConfig().Name
+        };
     }
 
-    /*public static GameAnnouncement GetGameAnnouncementDto(Master master)
+    public static void ParseGameAnnouncementDto(GameAnnouncement gameAnnouncement,
+                                                out String gameName, out Lab4Core.GameConfig gameConfig)
     {
-        
-    }*/
-
-    /*public static void ParseGameAnnouncementDto(GameAnnouncement gameAnnouncement)
-    {
-        
-    }*/
+        gameName = gameAnnouncement.GameName;
+        gameConfig = GetGameConfig(gameAnnouncement.Config);
+    }
 }

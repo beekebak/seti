@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Channels;
 using Google.Protobuf;
 using Snakes;
 
@@ -9,16 +10,18 @@ public class NetworkManager : IDisposable
 {
     private readonly UdpClientWrapper _multicastListener;
     private readonly UdpClientWrapper _mainUdpClient;
-
-    public NetworkManager()
+    private readonly Channel<GameMessage> _channel;
+    public NetworkManager(Channel<GameMessage> channel)
     {
+        _channel = channel;
         var multicastClient = new UdpClient();
         multicastClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
         multicastClient.Client.Bind(new IPEndPoint(IPAddress.Any, 9192));
         multicastClient.JoinMulticastGroup(IPAddress.Parse("239.192.0.4"));
         _multicastListener = new UdpClientWrapper(multicastClient);
-        
         _mainUdpClient = new UdpClientWrapper(new UdpClient());
+        GetMessage();
+        GetMulticastMessage();
     }
 
     public async Task SendMessage(GameMessage message)
@@ -26,16 +29,30 @@ public class NetworkManager : IDisposable
         await _mainUdpClient.SendAsync(message.ToByteArray());
     }
 
-    public async Task<GameMessage> GetMessage()
+    public async Task GetMessage()
     {
-        var msg =  await _mainUdpClient.ReceiveAsync();
-        return GameMessage.Parser.ParseFrom(msg.Buffer);
+        try
+        {
+            while (true)
+            {
+                var msg = await _mainUdpClient.ReceiveAsync();
+                var parsedMsg = GameMessage.Parser.ParseFrom(msg.Buffer);
+                _channel.Writer.WriteAsync(parsedMsg);
+            }
+        } catch (ObjectDisposedException e) {}
     }
 
-    public async Task<GameMessage> GetMulticastMessage()
+    public async Task GetMulticastMessage()
     {
-        var msg =  await _multicastListener.ReceiveAsync();
-        return GameMessage.Parser.ParseFrom(msg.Buffer);
+        try
+        {
+            while (true)
+            {
+                var msg = await _multicastListener.ReceiveAsync();
+                var parsedMsg = GameMessage.Parser.ParseFrom(msg.Buffer);
+                _channel.Writer.WriteAsync(parsedMsg);
+            }
+        } catch (ObjectDisposedException e) {}
     }
 
     public void Dispose()

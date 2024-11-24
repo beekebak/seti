@@ -9,8 +9,8 @@ public abstract class Player : IDisposable
     public Snake? RelatedSnake { get; protected set; }
     public GameContext? Context { get; protected set; }
 
-    public string Name { get; protected set; }
-    public int Id { get; } = NetworkContext.GetNewPlayerIndex();
+    public string Name { get; protected set; } = "<blank>";
+    public int Id { get; protected set; } = NetworkContext.GetNewPlayerIndex();
     public bool IsDead { get; protected set; } = false;
     protected GameConfig Config { get; set; }
     public event EventHandler<EventArgs>? ModelUpdated;
@@ -44,6 +44,14 @@ public abstract class Player : IDisposable
     public int GetScore()
     {
         return Context!.ScoreBoard.GetScore(RelatedSnake);
+    }
+
+    public void UpdateData(int id, string name, Snake? relatedSnake, bool dead = false)
+    {
+        Id = id;
+        Name = name;
+        RelatedSnake = relatedSnake;
+        IsDead = dead;
     }
     
     public abstract void Dispose();
