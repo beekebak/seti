@@ -29,7 +29,7 @@ public class ScoreBoardTests
         Snake snakeCollided = new Snake(collidedSnakeBody, 1, Directions.Right);
         Snake snakeCollider = new Snake(colliderSnakeBody, 2, Directions.Up); 
         GameField field = new GameField(5, 5);
-        var snakes = new List<Snake>{snakeCollided, snakeCollider};
+        var snakes = new MyConcurrentList<Snake>{snakeCollided, snakeCollider};
         ScoreBoard scoreBoard = new ScoreBoard();
         GameStateUpdater updater = new GameStateUpdater(snakes, field, scoreBoard);
             
@@ -44,7 +44,7 @@ public class ScoreBoardTests
         var colliderSnakeBody = new List<(int x, int y)>{(2,2), (2,1), (2,0)};
         Snake snakeCollider = new Snake(colliderSnakeBody, 2, Directions.Left); 
         GameField field = new GameField(5, 5);
-        var snakes = new List<Snake>{snakeCollider};
+        var snakes = new MyConcurrentList<Snake>{snakeCollider};
         ScoreBoard scoreBoard = new ScoreBoard();
         GameStateUpdater updater = new GameStateUpdater(snakes, field, scoreBoard);
             
@@ -59,7 +59,7 @@ public class ScoreBoardTests
         var colliderSnakeBody = new List<(int x, int y)>{(1,1), (1,2), (2,2), (2,1), (2,0)};
         Snake snakeCollider = new Snake(colliderSnakeBody, 2, Directions.Right); 
         GameField field = new GameField(5, 5);
-        var snakes = new List<Snake>{snakeCollider};
+        var snakes = new MyConcurrentList<Snake>{snakeCollider};
         ScoreBoard scoreBoard = new ScoreBoard();
         GameStateUpdater updater = new GameStateUpdater(snakes, field, scoreBoard);
             
@@ -76,7 +76,7 @@ public class ScoreBoardTests
         Snake snakeCollided = new Snake(collidedSnakeBody, 1, Directions.Left);
         Snake snakeCollider = new Snake(colliderSnakeBody, 2, Directions.Down); 
         GameField field = new GameField(6, 5);
-        var snakes = new List<Snake>{snakeCollided, snakeCollider};
+        var snakes = new MyConcurrentList<Snake>{snakeCollided, snakeCollider};
         ScoreBoard scoreBoard = new ScoreBoard();
         GameStateUpdater updater = new GameStateUpdater(snakes, field, scoreBoard);
             
@@ -95,7 +95,7 @@ public class ScoreBoardTests
         Snake snakeCollider = new Snake(colliderSnakeBody, 2, Directions.Down); 
         GameField field = new GameField(6, 5);
         field.SetCell(new FoodCell(0, 0));
-        var snakes = new List<Snake>{snakeCollided, snakeCollider};
+        var snakes = new MyConcurrentList<Snake>{snakeCollided, snakeCollider};
         ScoreBoard scoreBoard = new ScoreBoard();
         GameStateUpdater updater = new GameStateUpdater(snakes, field, scoreBoard);
             

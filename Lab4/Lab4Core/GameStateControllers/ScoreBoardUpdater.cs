@@ -1,10 +1,11 @@
+using System.Collections.Concurrent;
 using Lab4Core.GameObjects;
 
 namespace Lab4Core.GameStateControllers;
 
 class ScoreBoardUpdater
 {
-    private void UpdateFoodScore(List<Snake> aliveSnakes, HashSet<Snake> removedSnakes, GameField gameField,
+    private void UpdateFoodScore(MyConcurrentList<Snake> aliveSnakes, HashSet<Snake> removedSnakes, GameField gameField,
         ScoreBoard scoreBoard)
     {
         UpdateFoodScoreImpl(aliveSnakes, gameField, scoreBoard);
@@ -31,7 +32,7 @@ class ScoreBoardUpdater
         return null;
     }
 
-    private void UpdateKillScore(List<Snake> aliveSnakes, HashSet<Snake> removedSnakes, ScoreBoard scoreBoard)
+    private void UpdateKillScore(MyConcurrentList<Snake> aliveSnakes, HashSet<Snake> removedSnakes, ScoreBoard scoreBoard)
     {
         foreach (var removedSnake in removedSnakes)
         {
@@ -41,7 +42,7 @@ class ScoreBoardUpdater
         }
     }
 
-    private void SetZeroScoreByDefault(List<Snake> aliveSnakes, HashSet<Snake> removedSnakes, ScoreBoard scoreBoard)
+    private void SetZeroScoreByDefault(MyConcurrentList<Snake> aliveSnakes, HashSet<Snake> removedSnakes, ScoreBoard scoreBoard)
     {
         foreach (var snake in removedSnakes)
         {
@@ -53,7 +54,7 @@ class ScoreBoardUpdater
         }
     }
     
-    public void UpdateScore(List<Snake> aliveSnakes, HashSet<Snake> removedSnakes, GameField gameField,
+    public void UpdateScore(MyConcurrentList<Snake> aliveSnakes, HashSet<Snake> removedSnakes, GameField gameField,
         ScoreBoard scoreBoard)
     {
         SetZeroScoreByDefault(aliveSnakes, removedSnakes, scoreBoard);

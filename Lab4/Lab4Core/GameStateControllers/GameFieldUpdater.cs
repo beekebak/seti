@@ -1,12 +1,13 @@
+using System.Collections.Concurrent;
 using Lab4Core.GameObjects;
 
 namespace Lab4Core.GameStateControllers;
 
 class GameFieldUpdater
 {
-    private void AddSnakes(List<Snake> snakes, GameField gameField)
+    private void AddSnakes(MyConcurrentList<Snake> snakes, GameField gameField)
     {
-        snakes.ForEach(snake => snake.Body.ToList().ForEach(gameField.SetCell));
+        snakes.ToList().ForEach(snake => snake.Body.ToList().ForEach(gameField.SetCell));
     }
 
     private void ClearOldSnakes(GameField gameField)
@@ -61,7 +62,7 @@ class GameFieldUpdater
         }
     }
     
-    public void UpdateGameField(List<Snake> snakes, HashSet<Snake> removedSnakes, GameField gameField,
+    public void UpdateGameField(MyConcurrentList<Snake> snakes, HashSet<Snake> removedSnakes, GameField gameField,
         int minFoodCount)
     {
         ClearOldSnakes(gameField);
@@ -70,7 +71,7 @@ class GameFieldUpdater
         FixFood(gameField, minFoodCount);
     }
 
-    public void AddNewSnakes(List<Snake> newSnakes, GameField gameField)
+    public void AddNewSnakes(MyConcurrentList<Snake> newSnakes, GameField gameField)
     {
         AddSnakes(newSnakes, gameField);
     }

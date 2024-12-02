@@ -1,10 +1,11 @@
+using System.Collections.Concurrent;
 using Lab4Core.GameObjects;
 
 namespace Lab4Core.GameStateControllers;
 
 class SnakeCollider
 {
-    private HashSet<Snake> GetSnakesToRemove(GameField tempField, IList<Snake> snakes,
+    private HashSet<Snake> GetSnakesToRemove(GameField tempField, MyConcurrentList<Snake> snakes,
         Dictionary<SnakeCell, Snake> headToSnake)
     {
         HashSet<Snake> snakeToRemove = new HashSet<Snake>();
@@ -29,7 +30,7 @@ class SnakeCollider
         return snakeToRemove;
     }
     
-    public void CollideSnakes(List<Snake> snakes, out HashSet<Snake> removedSnakes, int width, int height)
+    public void CollideSnakes(MyConcurrentList<Snake> snakes, out HashSet<Snake> removedSnakes, int width, int height)
     {
         var headToSnake = new Dictionary<SnakeCell, Snake>();
         snakes.ToList().ForEach(snake => headToSnake.Add(snake.GetHead(), snake));

@@ -10,7 +10,7 @@ public class SnakeSpawnTests
     public void SnakeSpawn_SpawnsNewSnakes_Test()
     {
         GameField field = new GameField(7, 7);
-        var snakes = new List<Snake>();
+        var snakes = new MyConcurrentList<Snake>();
         foreach(var i in (int[])[0,3,6]) foreach(var j in (int[])[0,3,6]) 
             if(i != 3 || j != 3) field.SetCell(new SnakeCell(i, j, 1));
         GameStateUpdater updater = new GameStateUpdater(snakes, field, new ScoreBoard());

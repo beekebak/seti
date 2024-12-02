@@ -6,9 +6,4 @@ public class Utility
     {
         return (mod+old+diff)%mod;
     }
-
-    public static int RevertCoord(int coord, int mod)
-    {
-        return mod - coord - 1;
-    }
 }

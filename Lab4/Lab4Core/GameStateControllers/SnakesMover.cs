@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Lab4Core.GameObjects;
 using static Lab4Core.Utility;
 
@@ -40,7 +41,7 @@ class SnakesMover
         }
     }
     
-    public void MoveSnakes(IList<Snake> snakes, GameField field)
+    public void MoveSnakes(MyConcurrentList<Snake> snakes, GameField field)
     {
         foreach (var snake in snakes)
         {

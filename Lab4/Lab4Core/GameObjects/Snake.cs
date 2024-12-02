@@ -5,6 +5,7 @@ public class Snake
     public IList<SnakeCell> Body { get; }
     public Directions Direction { get; set; }
     public int PlayerId { get; }
+    public bool Alive { get; set; } = true;
 
     public Snake(List<(int x, int y)> initBody, int id, Directions direction = Directions.Left)
     {
@@ -49,5 +50,19 @@ public class Snake
             return Directions.Down;
         }
         throw new Exception("Invalid snake body values");
+    }
+
+    public override bool Equals(object? other)
+    {
+        if (other is Snake s)
+        {
+            return s.PlayerId == PlayerId;
+        } 
+        return false;
+    }
+    
+    public override int GetHashCode()
+    {
+        return PlayerId;
     }
 }

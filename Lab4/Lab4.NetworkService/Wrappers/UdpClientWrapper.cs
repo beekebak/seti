@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Sockets;
 
-namespace Lab4.NetworkService;
+namespace Lab4.NetworkService.Wrappers;
 
 public class UdpClientWrapper : IDisposable
 {
@@ -11,6 +11,8 @@ public class UdpClientWrapper : IDisposable
     {
         _client = client;
     }
+    
+    public async Task SendAsync(byte[] data, IPEndPoint endPoint) => await _client.SendAsync(data, data.Length, endPoint);
     
     public async Task SendAsync(byte[] data) => await _client.SendAsync(data, data.Length);
     

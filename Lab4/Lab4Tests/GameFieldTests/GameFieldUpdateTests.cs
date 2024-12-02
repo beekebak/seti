@@ -12,7 +12,7 @@ public class GameFieldUpdateTests
         var collidedSnakeBody = new List<(int x, int y)>{(1,1), (1,2), (1,3)};
         Snake snakeCollided = new Snake(collidedSnakeBody, 1, Directions.Right);
         GameField field = new GameField(5, 5);
-        var snakes = new List<Snake>{snakeCollided};
+        var snakes = new MyConcurrentList<Snake>{snakeCollided};
         GameStateUpdater updater = new GameStateUpdater(snakes, field, new ScoreBoard());
             
         updater.Update();
@@ -27,7 +27,7 @@ public class GameFieldUpdateTests
     {
         GameField field = new GameField(5, 5);
         field.SetCell(new SnakeCell(3, 3, 3));
-        GameStateUpdater updater = new GameStateUpdater(new List<Snake>(), field, new ScoreBoard());
+        GameStateUpdater updater = new GameStateUpdater(new MyConcurrentList<Snake>(), field, new ScoreBoard());
         
         updater.Update();
         
@@ -52,7 +52,7 @@ public class GameFieldUpdateTests
     public void GameFieldUpdate_AtLeastMinimumFoodOnField_Test()
     {
         GameField field = new GameField(5, 10);
-        GameStateUpdater updater = new GameStateUpdater(new List<Snake>(), field, new ScoreBoard(), 5);
+        GameStateUpdater updater = new GameStateUpdater(new MyConcurrentList<Snake>(), field, new ScoreBoard(), 5);
         
         updater.Update();
 

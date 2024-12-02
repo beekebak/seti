@@ -1,10 +1,11 @@
+using System.Collections.Concurrent;
 using Lab4Core.GameObjects;
 
 namespace Lab4Core.GameStateControllers;
 
 public class GameStateUpdater
 {
-    private readonly List<Snake> _snakes;
+    private readonly MyConcurrentList<Snake> _snakes;
     private readonly GameField _gameField;
     private readonly ScoreBoard _scoreBoard;
     private readonly int _foodStatic;
@@ -14,7 +15,7 @@ public class GameStateUpdater
     private readonly GameFieldUpdater _gameFieldUpdater = new();
     private readonly SnakeSpawner _snakeSpawner = new();
     
-    public GameStateUpdater(List<Snake> snakes, GameField gameField,
+    public GameStateUpdater(MyConcurrentList<Snake> snakes, GameField gameField,
                             ScoreBoard scoreBoard, int foodStatic = 0)
     {
         _snakes = snakes;

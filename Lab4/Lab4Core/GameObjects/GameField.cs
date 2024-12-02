@@ -3,6 +3,7 @@ namespace Lab4Core.GameObjects;
 public class GameField
 {
     private readonly List<List<Cell>> _field;
+    private object lockObject = new();
 
     //initialize height*width 2D List with EmptyCell
     public GameField(int width, int height)
@@ -16,14 +17,20 @@ public class GameField
 
     public Cell GetCell(int x, int y)
     {
-        return _field[GetHeight()-1-y][x];
+        lock (lockObject)
+        {
+            return _field[GetHeight() - 1 - y][x];
+        }
     }
 
     public void SetCell(Cell cell)
     {
-        int tempX = cell.GetPosition().Item1;
-        int tempY = cell.GetPosition().Item2;
-        _field[GetHeight()-1-tempY][tempX] = cell;
+        lock (lockObject)
+        {
+            int tempX = cell.GetPosition().Item1;
+            int tempY = cell.GetPosition().Item2;
+            _field[GetHeight() - 1 - tempY][tempX] = cell;
+        }
     }
     
     public int GetWidth()
@@ -39,11 +46,14 @@ public class GameField
     public List<(int x, int y)> GetFoodPositions()
     {
         List<(int x, int y)> positions = new List<(int x, int y)>();
-        for (int i = 0; i < _field.Count; i++)
+        lock (lockObject)
         {
-            for (int j = 0; j < _field[i].Count; j++)
+            for (int i = 0; i < _field.Count; i++)
             {
-                if(_field[i][j] is FoodCell cell) positions.Add(cell.GetPosition());
+                for (int j = 0; j < _field[i].Count; j++)
+                {
+                    if (_field[i][j] is FoodCell cell) positions.Add(cell.GetPosition());
+                }
             }
         }
         return positions;

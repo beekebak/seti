@@ -1,5 +1,6 @@
 using System.Net;
 using Lab4.NetworkService.Players;
+using Lab4.NetworkService.Wrappers;
 using Lab4Core;
 using Lab4Core.GameObjects;
 using Snakes;
@@ -34,12 +35,23 @@ public static class Converter
 
     public static NodeRole GetRoleDto(Player player)
     {
-        switch (player)
+        switch (player.Role)
         {
-            case Master: return NodeRole.Master;
-            case Deputy: return NodeRole.Deputy;
-            case RegularPlayer: return NodeRole.Normal;
-            case Watcher: return NodeRole.Viewer;
+            case PlayerRole.Master: return NodeRole.Master;
+            case PlayerRole.Deputy: return NodeRole.Deputy;
+            case PlayerRole.Normal: return NodeRole.Normal;
+            case PlayerRole.Viewer: return NodeRole.Viewer;
+            default: return NodeRole.Normal;
+        }
+    }
+    public static NodeRole GetRoleDto(PlayerRole role)
+    {
+        switch (role)
+        {
+            case PlayerRole.Master: return NodeRole.Master;
+            case PlayerRole.Deputy: return NodeRole.Deputy;
+            case PlayerRole.Normal: return NodeRole.Normal;
+            case PlayerRole.Viewer: return NodeRole.Viewer;
             default: return NodeRole.Normal;
         }
     }
@@ -48,15 +60,27 @@ public static class Converter
     {
         switch (role)
         {
-            case NodeRole.Master: return new Master();
-            case NodeRole.Deputy: return new Deputy();
-            case NodeRole.Normal: return new RegularPlayer();
-            case NodeRole.Viewer: return new Watcher();
-            default: return new RegularPlayer();
+            case NodeRole.Master: return new Player(PlayerRole.Master);
+            case NodeRole.Deputy: return new Player(PlayerRole.Deputy);
+            case NodeRole.Normal: return new Player(PlayerRole.Normal);
+            case NodeRole.Viewer: return new Player(PlayerRole.Viewer);
+            default: return new Player(PlayerRole.Normal);
+        }
+    }
+    
+    public static PlayerRole GetRole(NodeRole role)
+    {
+        switch (role)
+        {
+            case NodeRole.Master: return PlayerRole.Master;
+            case NodeRole.Deputy: return PlayerRole.Deputy;
+            case NodeRole.Normal: return PlayerRole.Normal;
+            case NodeRole.Viewer: return PlayerRole.Viewer;
+            default: return PlayerRole.Normal;
         }
     }
 
-    public static GamePlayer GetPlayerDto(Player player, IPEndPoint? address = null)
+    public static GamePlayer GetPlayerDto(Player player, int score, IPEndPoint? address = null)
     {
         NodeRole role = GetRoleDto(player);
         GamePlayer playerDto = new GamePlayer
@@ -64,7 +88,7 @@ public static class Converter
             Id = player.Id,
             Name = player.Name,
             Role = role,
-            Score = player.GetScore()
+            Score = score
         };
         if (address != null)
         {
@@ -74,15 +98,16 @@ public static class Converter
         return playerDto;
     }
 
-    public static void ParsePlayerDto(GamePlayer playerDto, out string name, out int id, out int score,
-        out IPEndPoint? address)
+    public static void ParsePlayerDto(GamePlayer playerDto, out int score, out PlayerWrapper wrapper)
     {
-        name = playerDto.Name;
-        id = playerDto.Id;
         score = playerDto.Score;
+        IPEndPoint address;
         if(playerDto.HasPort && playerDto.HasIpAddress) 
             address = new IPEndPoint(IPAddress.Parse(playerDto.IpAddress), playerDto.Port);
         else address = null;
+        wrapper = new PlayerWrapper(GetPlayer(playerDto.Role));
+        wrapper.Player.SetupData(playerDto.Id, playerDto.Name);
+        wrapper.EndPoint = address;
     }
 
     public static Snakes.GameConfig GetGameConfigDto(Lab4Core.GameConfig config)
@@ -130,21 +155,21 @@ public static class Converter
         return (coord.X, coord.Y);
     }
 
-    public static GameState.Types.Snake GetSnakeDto(Lab4Core.GameObjects.Snake snake, int id, bool alive)
+    public static GameState.Types.Snake GetSnakeDto(Lab4Core.GameObjects.Snake snake)
     {
         List<GameState.Types.Coord> points = new List<GameState.Types.Coord>{GetCoordDto(snake.Body[0].GetPosition())};
         for(int i = 1; i < snake.Body.Count; i++)
         {
-            int deltaX = snake.Body[i].GetPosition().x - snake.Body[i-1].GetPosition().y;
-            int deltaY = snake.Body[i].GetPosition().x - snake.Body[i-1].GetPosition().y;
+            int deltaX = snake.Body[i].GetPosition().x - snake.Body[i-1].GetPosition().x;
+            int deltaY = snake.Body[i].GetPosition().y - snake.Body[i-1].GetPosition().y;
             points.Add(GetCoordDto(deltaX, deltaY)); 
         }
         return new GameState.Types.Snake
         {
-            PlayerId = id,
+            PlayerId = snake.PlayerId,
             Points = { points },
-            State = alive ? GameState.Types.Snake.Types.SnakeState.Alive : GameState.Types.Snake.Types.SnakeState.Zombie,
-            HeadDirection = GetDirectionDto(snake.GetForbiddenDirection())
+            State = snake.Alive ? GameState.Types.Snake.Types.SnakeState.Alive : GameState.Types.Snake.Types.SnakeState.Zombie,
+            HeadDirection = GetDirectionDto(snake.Direction)
         };
     }
 
@@ -153,64 +178,84 @@ public static class Converter
         List<(int, int)> snakeBody = new List<(int, int)> { GetCoordinates(snake.Points[0]) };
         for (int i = 1; i < snake.Points.Count; i++)
         {
-            int parsedX = snake.Points[i].X + snake.Points[i-1].X;
-            int parsedY = snake.Points[i].Y + snake.Points[i-1].Y;
+            int parsedX = snake.Points[i].X + snakeBody[i-1].Item1;
+            int parsedY = snake.Points[i].Y + snakeBody[i-1].Item2;
             snakeBody.Add((parsedX, parsedY));
         }
-        return new Lab4Core.GameObjects.Snake(snake.Points.ToList().ConvertAll(GetCoordinates),
+        return new Lab4Core.GameObjects.Snake(snakeBody,
             snake.PlayerId, GetDirection(snake.HeadDirection));
     }
     
-    public static GameState GetGameStateDto(Master master)
+    public static GameState GetGameStateDto(MultiplayerGameContext master, List<PlayerWrapper> wrappers)
     {
         var players = new GamePlayers();
-        players.Players.AddRange(master.Players.ConvertAll(player => GetPlayerDto(player)));
+        players.Players.AddRange(wrappers.ConvertAll(player => GetPlayerDto(player.Player,
+            master.GetScore(player.Player), player.EndPoint)));
         return new GameState
         {
-            StateOrder = master.Context!.StateOrder,
-            Snakes = { master.Players.ConvertAll(player => GetSnakeDto(player.RelatedSnake!, player.Id, !player.IsDead)) },
+            StateOrder = master.Context.StateOrder,
+            Snakes = { master.Players.ConvertAll(player => GetSnakeDto(player.RelatedSnake!)) },
             Foods = { master.Context.Field.GetFoodPositions().ConvertAll(pair => GetCoordDto(pair.x, pair.y)) },
             Players = players
         };
     }
     
     public static void ParseGameStateDto(GameState state, out List<(int x, int y)> foodCoords,
-                                         out List<Lab4Core.GameObjects.Snake> snakes, out List<Player> players,
-                                         out ScoreBoard scores)
+        out MyConcurrentList<PlayerWrapper> players, out ScoreBoard scores)
     {
         foodCoords = state.Foods.ToList().ConvertAll(GetCoordinates);
-        snakes = state.Snakes.ToList().ConvertAll(GetSnake);
-        players = new List<Player>();
+        var snakes = state.Snakes.ToList().ConvertAll(GetSnake);
+        players = new MyConcurrentList<PlayerWrapper>();
         scores = new ScoreBoard();
         int usedSnakesCount = 0;
         foreach (var player in state.Players.Players)
         {
             var current = GetPlayer(player.Role);
-            if (current is not Watcher)
+            if (current.Role != PlayerRole.Viewer)
             {
                 bool dead = state.Snakes[usedSnakesCount].State == GameState.Types.Snake.Types.SnakeState.Alive;
                 current.UpdateData(player.Id, player.Name, snakes[usedSnakesCount], dead);
                 scores.UpdateScore(snakes[usedSnakesCount], player.Score);
                 usedSnakesCount++;
             }
+
+            if (player.HasIpAddress && player.HasPort)
+            {
+                var endPoint = new IPEndPoint(IPAddress.Parse(player.IpAddress), player.Port);
+                players.Add(new PlayerWrapper(current, endPoint));
+            }
+            else
+            {
+                players.Add(new PlayerWrapper(current));
+            }
         }
     }
-    public static GameAnnouncement GetGameAnnouncementDto(Master master)
+    public static GameAnnouncement GetGameAnnouncementDto(MultiplayerGameContext master, 
+        MyConcurrentList<PlayerWrapper> wrappers)
     {
         var players = new GamePlayers();
-        players.Players.AddRange(master.Players.ConvertAll(player => GetPlayerDto(player)));
+        players.Players.AddRange(wrappers.ConvertAll(player => GetPlayerDto(player.Player,
+            master.GetScore(player.Player), player.EndPoint)));
         return new GameAnnouncement
         {
             Players = players,
-            Config = GetGameConfigDto(master.GetConfig()),
-            GameName = master.GetConfig().Name
+            Config = GetGameConfigDto(master.GetConfig()!),
+            GameName = master.GetConfig()!.Name
         };
     }
 
     public static void ParseGameAnnouncementDto(GameAnnouncement gameAnnouncement,
-                                                out String gameName, out Lab4Core.GameConfig gameConfig)
+                                                out String gameName, out Lab4Core.GameConfig gameConfig,
+                                                out MyConcurrentList<PlayerWrapper> players)
     {
         gameName = gameAnnouncement.GameName;
         gameConfig = GetGameConfig(gameAnnouncement.Config);
+        players = new MyConcurrentList<PlayerWrapper>();
+        foreach (var player in gameAnnouncement.Players.Players)
+        {
+            PlayerWrapper wrapper;
+            ParsePlayerDto(player, out _, out wrapper);
+            players.Add(wrapper);
+        }
     }
 }

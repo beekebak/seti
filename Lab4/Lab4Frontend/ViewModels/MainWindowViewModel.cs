@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Input;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Lab4.NetworkService;
 using Lab4.NetworkService.Players;
 using Lab4Core;
 using ReactiveUI;
@@ -30,7 +31,7 @@ public partial class MainWindowViewModel : ReactiveObject
         { 0, Colors.Black },
         { -1, Colors.Green }
     };
-    private Master? _player;
+    private Game _game;
     
     public MainWindowViewModel()
     {
@@ -38,30 +39,30 @@ public partial class MainWindowViewModel : ReactiveObject
         AKey = ReactiveCommand.Create(MoveLeft);
         SKey = ReactiveCommand.Create(MoveUp);
         DKey = ReactiveCommand.Create(MoveRight);
+        _game = new Game();
+        _game.Start();
     }
 
-    private void MoveUp() => _player?.Move(Directions.Up);
-    private void MoveLeft() => _player?.Move(Directions.Left);
-    private void MoveDown() => _player?.Move(Directions.Down);
-    private void MoveRight() => _player?.Move(Directions.Right);
+    private void MoveUp() => _game.Move(Directions.Up);
+    private void MoveLeft() => _game.Move(Directions.Left);
+    private void MoveDown() => _game.Move(Directions.Down);
+    private void MoveRight() => _game.Move(Directions.Right);
     
     public void StartGame()
     {
-        _player?.Dispose();
-        _player = new Master();
-        _player.StartGame();
-        _player.ModelUpdated += OnModelUpdate;
+        _game.InitializeGameStart();
+        _game.ModelUpdated += OnModelUpdate;
     }
 
-    public void EndGame()
+    public async void EndGame()
     {
-        _player?.Dispose();
+        await _game.LeaveGame();
         _snakeColorToRealColorMap.Clear();
     }
 
     private void UpdateScoreTableView()
     {
-        var scoreTable = _player!.GetScores();
+        var scoreTable = _game.GetScores();
         ScoreTable.Clear();
         foreach (var score in scoreTable)
         {
@@ -71,7 +72,7 @@ public partial class MainWindowViewModel : ReactiveObject
 
     private Color GetCurrentColor(int x, int y)
     {
-        int cellColor = _player!.Context!.Field.GetCell(x, y).GetColorId();
+        int cellColor = _game.GetCellColor(x, y);
         if(_snakeColorToRealColorMap.TryGetValue(cellColor, out var color)) return color;
         var random = new Random();
         _snakeColorToRealColorMap.Add(cellColor, AllColors.OrderBy(_ => random.Next())
@@ -83,10 +84,10 @@ public partial class MainWindowViewModel : ReactiveObject
     private void UpdateGameFieldView()
     {
         FieldColors.Clear();
-        for (int y = 0; y < _player!.Context!.Field.GetHeight(); y++)
+        for (int y = 0; y < _game.GetFieldHeight(); y++)
         {
             var row = new ObservableCollection<SolidColorBrush>();
-            for (int x = 0; x < _player.Context!.Field.GetWidth(); x++)
+            for (int x = 0; x < _game.GetFieldWidth(); x++)
             {
                 Color color = GetCurrentColor(x, y);
                 row.Add(new SolidColorBrush(color));
@@ -95,7 +96,7 @@ public partial class MainWindowViewModel : ReactiveObject
         }
     }
     
-    private void OnModelUpdate(object? sender, EventArgs e)
+    private void OnModelUpdate()
     {
         Dispatcher.UIThread.Invoke(() =>
         {
